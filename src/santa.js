@@ -54,7 +54,7 @@ module.exports = function(robot) {
                 message += `        <@${santa.user.id}> :gift:=> <@${secretSanta.pairings[santa.user.id].recipient.user.id}>\n`
             });
         } else {
-            message += secretSanta.santaList.forEach(santa => `<@${santa.user.id}>`).join(", ");
+            message += secretSanta.santaList.map(santa => `<@${santa.user.id}>`).join(", ");
             message += '\n    ... but pairing did not happen.\n';
         }
         message += "\nUntil next year! Happy holidaaays!";
