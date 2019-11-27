@@ -22,7 +22,7 @@ const SANTAS_TO_END = process.env.HUBOT_SECRET_SANTA_VOTES_TO_END || 3;
 
 
 function isDm(msg) {
-    return msg.message.channel[0] == 'D';
+    return msg.message.room[0] == 'D';
 }
 
 
