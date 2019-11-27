@@ -48,7 +48,7 @@ module.exports = function(robot) {
         message += `    *Date Started:* ${new Date(secretSanta.started).toLocaleDateString()}\n`;
         message += `    *Initiator*: <@${secretSanta.initiator.id}>\n`;
         message += `    *Santas*: `;
-        if (MrsClaus.isPairingDone()) {
+        if (typeof secretSanta.pairings !== 'undefined') {
             message += '\n';
             secretSanta.santaList.forEach(santa => {
                 message += `        <@${santa.user.id}> :gift:=> <@${secretSanta.pairings[santa.user.id].recipient.user.id}>\n`
@@ -200,7 +200,7 @@ module.exports = function(robot) {
         }
         const pair = MrsClaus.getPairedUser(msg.message.user.id, type);
         const reverseType = type == 'recipient' ? 'santa' : 'recipient';
-        const message = `:santa: Ho ho ho! I have a message for you from your ${reverseType}! They said:\n>${text}`;
+        const message = `:santa: Ho ho ho! I have a message for you from your ${reverseType}! They said:\n>${text}\n\nIf you'd like to reply, say \`!santa msg ${reverseType} [message]\`, where \`[message]\` is what you'd like to say back!`;
         messageUser(pair.user.id, message);
         msg.send(`:santa: Ho ho ho! Consider it delivered! I'll let you know if they reply!`);
     };
