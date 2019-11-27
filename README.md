@@ -1,12 +1,25 @@
 hubot-secret-santa
 ==================
 
-🎅🏻 Ho ho ho! This module allows you to run secret Santa events in your Slack!
+🎅 Ho ho ho! This module allows you to run secret Santa events in your Slack!
 
     Perry: !santa start $50
-    hubot: 🎅🏻 Ho ho ho! Santa's workshop is open to spread holiday cheer! You can join this secret Santa sortie by saying `!santa join [message]`, where `[message]` is a message to your Santa about what you might like to recieve!
+    hubot: 🎅 Ho ho ho! Santa's workshop is open to spread holiday cheer! You can join this secret Santa sortie by saying `!santa join [message]`, where `[message]` is a message to your Santa about what you might like to recieve!
     Katy: !santa join "I like socks!"
-    hubot: 🎅🏻 Ho ho ho! You've been added to my list!
+    hubot: 🎅 Ho ho ho! You've been added to my list!
+    Bandy: !santa join "I like socks!"
+    hubot: 🎅 Ho ho ho! You've been added to my list!
+    Perry: !santa pair
+    hubot: 🎅 Ho ho ho! I've checked my list twice and told all my little helpers who will be receiving their gifts of holiday cheer. If you need any reminders of your recipient or their message, send me `!santa` in a private message!
+    Perry: !santa end
+    hubot: 🎅 Ho ho ho! I hope everyone had a wonderful holiday, full of cheer and good will! Here are some stats about this secret Santa:
+        *Date Started*: 12/25/2019
+        *Initiator*: @Perry
+        *Santas*:
+            @Perry 🎁=> @Bandy
+            @Bandy 🎁=> @Katy
+            @Katy 🎁=> @Perry
+    Until next year! Happy holidaaays!
 
 ## Commands
 
