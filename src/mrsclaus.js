@@ -93,13 +93,13 @@ module.exports = function(robot) {
 
     this.pair = () => {
         let secretSanta = this.getSecretSanta();
-        let users = [...secretSanta.santaList];
-        shuffle(users);
+        let santas = [...secretSanta.santaList];
+        shuffle(santas);
         secretSanta.pairings = {};
-        for (let i=0; i<users.length; i++) {
-            secretSanta.pairings[users[i]] = {
-                recipient: users[(i+1) % users.length],
-                santa: users[i == 0 ? users.length-1 : i-1]
+        for (let i=0; i<santas.length; i++) {
+            secretSanta.pairings[santas[i].user.id] = {
+                recipient: santas[(i+1) % santas.length],
+                santa: santas[i == 0 ? santas.length-1 : i-1]
             }
         }
         save(secretSanta);

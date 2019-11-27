@@ -17,7 +17,7 @@
 //   Perry Goy https://github.com/perrygoy
 
 
-const SecretSantaMod = require('./secretsanta');
+const SecretSantaMod = require('./mrsclaus');
 const SANTAS_TO_END = process.env.HUBOT_SECRET_SANTA_VOTES_TO_END || 3;
 
 
@@ -27,7 +27,7 @@ function isDm(msg) {
 
 
 module.exports = function(robot) {
-    const NiceList = new SecretSantaMod(robot);
+    const MrsClaus = new SecretSantaMod(robot);
 
     // helpers
 
@@ -36,10 +36,10 @@ module.exports = function(robot) {
     };
 
     messageInitiator = message => {
-        if (!NiceList.isSantasWorkshopOpen()) {
+        if (!MrsClaus.isSantasWorkshopOpen()) {
             return;
         }
-        const secretSanta = NiceList.getSecretSanta();
+        const secretSanta = MrsClaus.getSecretSanta();
         messageUser(secretSanta.initiator.id, message);
     };
 
@@ -48,7 +48,7 @@ module.exports = function(robot) {
         message += `*Date Started:* ${new Date(secretSanta.started).toLocaleDateString()}\n`;
         message += `*Initiator*: <@${secretSanta.initiator.id}>\n`;
         message += `*Santas*: `;
-        if (NiceList.isPairingDone()) {
+        if (MrsClaus.isPairingDone()) {
             message += '\n';
             secretSanta.santaList.forEach(santa => {
                 message += `    <@${santa.user.id}> :gift:=> <@${secretSanta.pairings[santa.user.id].recipient.user.id}>\n`
@@ -68,13 +68,13 @@ module.exports = function(robot) {
     };
 
     this.handleUserSantaDetails = msg => {
-        if (!NiceList.isSantasWorkshopOpen()) {
+        if (!MrsClaus.isSantasWorkshopOpen()) {
             msg.send(":santa: Ho ho ho! I don't have much to tell you; my workshop isn't open yet! If you want to start a secret Santa, you can say `!santa start [limit]`, where `[limit]` is the money limit for your Santas' gifts!");
             return;
         }
-        const secretSanta = NiceList.getSecretSanta();
+        const secretSanta = MrsClaus.getSecretSanta();
         let message = ":santa: Ho ho ho! Here's what I can tell you about this secret Santa:\n\n";
-        if (!NiceList.isPairingDone()) {
+        if (!MrsClaus.isPairingDone()) {
             message += "... well, I can only tell you that ";
             if (typeof secretSanta.limit === 'undefined') {
                 message += "there was no gift limit set. Ho ho ho!";
@@ -82,7 +82,7 @@ module.exports = function(robot) {
                 message += `the gift limit is ${secretSanta.limit}. Ho ho ho!`;
             }
         } else {
-            const recipient = NiceList.getPairedUser(msg.message.user.id, 'recipient');
+            const recipient = MrsClaus.getPairedUser(msg.message.user.id, 'recipient');
             message += `    *Gift Limit*: ${typeof secretSanta.limit === 'undefined' ? 'None!' : secretSanta.limit}\n`;
             message += `    *Your Recipient*: <@${recipient.user.id}>\n`;
             message += `    *Your Recipient's message*: ${typeof recipient.message === 'undefined' ? "... They didn't give one!" : recipient.message}`;
@@ -91,17 +91,17 @@ module.exports = function(robot) {
     };
 
     this.handleChannelSantaDetails = msg => {
-        if (!NiceList.isSantasWorkshopOpen()) {
+        if (!MrsClaus.isSantasWorkshopOpen()) {
             msg.send(":santa: Ho ho ho! I don't have much to tell you; my workshop isn't open yet! If you want to start a secret Santa, you can say `!santa start [limit]`, where `[limit]` is the money limit for your Santas' gifts!");
             return;
         }
-        const secretSanta = NiceList.getSecretSanta();
+        const secretSanta = MrsClaus.getSecretSanta();
         let message = ":santa: Ho ho ho! Here's what I can tell you about this secret Santa:\n\n";
         message += `    *Initiated By*: ${secretSanta.initiator.name}\n`;
         message += `    *Initiated On*: ${new Date(secretSanta.started).toLocaleDateString()}\n`
         message += `    *Gift Limit*: ${typeof secretSanta.limit === 'undefined' ? 'None!' : secretSanta.limit}\n`;
         message += `    *Santas*: ${secretSanta.santaList.map(santa => santa.user.name).join(', ')}.\n\n`;
-        if (!NiceList.isPairingDone()) {
+        if (!MrsClaus.isPairingDone()) {
             message += "If you're ready to begin pairing, you can say `!santa pair`! Otherwise, new Santas can join by saying `!santa join [message]`, where `[message]` is a message to their Santa!";
         } else {
             message += "You all have been paired with your gift recipients! If you can't remember who will be receiving your holiday cheer and good will, send `!santa` to me in a private message!";
@@ -110,30 +110,30 @@ module.exports = function(robot) {
     };
 
     this.handleStartSanta = (msg, limit) => {
-        if (NiceList.isSantasWorkshopOpen()) {
+        if (MrsClaus.isSantasWorkshopOpen()) {
             msg.send(':santa: Ho ho ho! My workshop is already open! You can start pairing by saying `!santa pair`.');
             return;
         }
-        if (NiceList.isPairingDone()) {
+        if (MrsClaus.isPairingDone()) {
             msg.send(":santa: Ho ho ho! My Santa squad is secretly sending their gifts to their recipients! If they've finished, you'll have to end this round with `!santa end` before starting a new one!");
             return;
         }
-        NiceList.startSanta(msg.message.user, limit);
+        MrsClaus.startSanta(msg.message.user, limit);
         msg.send(":santa: Ho ho ho! Santa's workshop is open to spread holiday cheer! You can join this secret Santa sortie by saying `!santa join [message]`, where `[message]` is a message to your Santa about what you might like to recieve!");
     };
 
     this.handleJoin = (msg, message) => {
-        if (!NiceList.isSantasWorkshopOpen()) {
+        if (!MrsClaus.isSantasWorkshopOpen()) {
             msg.send(":santa: Ho ho ho! My workshop isn't currently open! You can start a new secret Santa by saying `!santa start`!");
             return;
         }
-        const secretSanta = NiceList.getSecretSanta();
-        if (NiceList.isPairingDone()) {
+        const secretSanta = MrsClaus.getSecretSanta();
+        if (MrsClaus.isPairingDone()) {
             msg.send(`:santa: Ho ho ho! I'm sorry little one, you missed out on this secret Santa; pairings have already gone out! You could try to get <@${secretSanta.initiator.id}> to re-open pairings if they say \`!santa reopen\`!`);
             messageInitiator(`:santa: Ho ho ho! It seems little <@${msg.message.user.id}> missed the cutoff and wants to join this secret Santa. If you'd like them to join, you can re-open pairings by saying \`!santa reopen\`!\n\n*This would mean all current pairings would be broken*, and you would need to say \`!santa pair\` again to re-pair all your Santas!`);
             return;
         }
-        NiceList.addSanta(msg.message.user, message);
+        MrsClaus.addSanta(msg.message.user, message);
         let response = ":santa: Ho ho ho! You've been added to my list!";
         if (typeof secretSanta.limit === 'undefined') {
             response += " There was no monetary limit set for this secret Santa! :moneybag::present::moneybag:";
@@ -148,30 +148,30 @@ module.exports = function(robot) {
     };
 
     this.handleSetMessage = (msg, message) => {
-        if (!NiceList.isSantasWorkshopOpen()) {
+        if (!MrsClaus.isSantasWorkshopOpen()) {
             msg.send(":santa: Ho ho ho! My workshop isn't currently open! You can start a new secret Santa by saying `!santa start`!");
             return;
         }
-        const secretSanta = NiceList.getSecretSanta();
+        const secretSanta = MrsClaus.getSecretSanta();
         if (!secretSanta.santaList.forEach(santa => santa.user.id).contains(msg.message.user.id)) {
             msg.send(":santa: Ho ho ho! You haven't joined this secret Santa event yet! If you'd like to join, say `!santa join [message]`, where `[message]` is a message to your Santa!");
             return;
         }
-        NiceList.setMessage(msg.message.user.id, message);
+        MrsClaus.setMessage(msg.message.user.id, message);
         msg.send(":santa: Ho ho ho! I've updated my list!");
-        if (NiceList.isPairingDone()) {
-            const pair = NiceList.getPairedUser(msg.message.user.id, 'santa');
+        if (MrsClaus.isPairingDone()) {
+            const pair = MrsClaus.getPairedUser(msg.message.user.id, 'santa');
             messageUser(pair.id, `:santa: Ho ho ho! Your recipient just updated their message! This is what they had to say:\n>${message}`);
         }
     };
 
     this.handlePairing = msg => {
-        if (NiceList.isPairingDone()) {
+        if (MrsClaus.isPairingDone()) {
             msg.send(":santa: Ho ho ho! I've already checked my list twice! If you need a reminder of who will be receiving your gift, send me `!santa` in a private message!");
             return;
         }
-        NiceList.pair();
-        const secretSanta = NiceList.getSecretSanta();
+        MrsClaus.pair();
+        const secretSanta = MrsClaus.getSecretSanta();
         secretSanta.santaList.forEach(santa => {
             const pair = secretSanta.pairings[santa.user.id];
             const message = `>>> ${pair.recipient.message}` || "... They did not leave you a message... you can reach out to them by saying `!santa msg recipient [message]`, where `[message]` is what you want me to tell them!";
@@ -181,11 +181,11 @@ module.exports = function(robot) {
     }
 
     this.handleReopening = msg => {
-        if (!NiceList.isPairingDone()) {
+        if (!MrsClaus.isPairingDone()) {
             msg.send(":santa: Ho ho ho! Santa's workshop hasn't closed yet! There is still time to join by saying `!santa join [message]`!");
             return;
         }
-        const secretSanta = NiceList.getSecretSanta();
+        const secretSanta = MrsClaus.getSecretSanta();
         if (msg.message.user.id != secretSanta.initiator.id) {
             msg.send(`:santa: Ho ho ho! You're not ${secretSanta.initiator.name}! Only they can reopen my workshop. You wouldn't want to be put on the naughty list, would you?`);
             messageInitiator(`:santa: Ho ho ho! <@${msg.message.user.id}> just tried to break in to my workshop! I think you should have a stern talk with them over some warm milk and cookies. :glass_of_milk::cookie:`);
@@ -194,44 +194,44 @@ module.exports = function(robot) {
         secretSanta.santaList.forEach(santa => {
             messageUser(santa.user.id, `:santa: Ho ho ho! The initiator of the secret Santa has reopened the list! That means your recipient will be changing soon. Ask <@${secretSanta.initiator.id}> if you need any help!`);
         });
-        NiceList.reopen(msg.message.user.id);
+        MrsClaus.reopen(msg.message.user.id);
     };
 
     this.handleMsgUser = (msg, type, text) => {
-        if (!NiceList.isPairingDone()) {
+        if (!MrsClaus.isPairingDone()) {
             msg.send(":santa: Ho ho ho! I haven't done the pairings yet! You can start pairing by saying `!santa pair`.");
             return;
         }
-        const pair = NiceList.getPairedUser(sender, type);
+        const pair = MrsClaus.getPairedUser(sender, type);
         const message = `:santa: Ho ho ho! I have a message for you from your ${pair.type}! They said:\n>${text}`;
         messageUser(pair.id, message);
         msg.send(`:santa: Ho ho ho! Consider it delivered! I'll let you know if they reply!`);
     };
 
     this.handleEnd = msg => {
-        if (!NiceList.isSantasWorkshopOpen()) {
+        if (!MrsClaus.isSantasWorkshopOpen()) {
             msg.send(":santa: Ho ho ho! My workshop is already closed!");
             return;
         }
-        const secretSanta = NiceList.getSecretSanta();
+        const secretSanta = MrsClaus.getSecretSanta();
         if (msg.message.user.id != secretSanta.initiator.id) {
             if (typeof secretSanta.votesToEnd === 'undefined' && SANTAS_TO_END > 1){
                 msg.send(`:santa: Ho ho ho! While only ${secretSanta.initiator.name} can end the festivities outright, if ${SANTAS_TO_END} people all want to end this secret Santa, we'll be finished! Your vote has been counted, we just need ${SANTAS_TO_END - 1} more.`);
-                NiceList.addVoteToEnd(msg.message.user.id);
+                MrsClaus.addVoteToEnd(msg.message.user.id);
                 return;
             } else if (secretSanta.votesToEnd.contains(msg.message.user.id)) {
                 msg.send(`:santa: Ho ho ho! I've checked my list, and you've already voted! You don't want to be added to the naughty list, do you?`);
                 return;
             } else if (SANTAS_TO_END - secretSanta.votesToEnd.length - 1 > 0) {
                 msg.send(`:santa: Ho ho ho! Another Santa's running out of holiday cheer! Just ${SANTAS_TO_END - secretSanta.votesToEnd.length - 1} more to go before this secret Santa closes shop!`);
-                NiceList.addVoteToEnd(msg.message.user.id);
+                MrsClaus.addVoteToEnd(msg.message.user.id);
                 return;
             } else {
                 msg.send(`:santa: Ho ho ho! Time to clear out for the Easter Bunny. Closing up shop!`);
             }
         }
         msg.send(getClosingMessage(secretSanta));
-        NiceList.closeSantasShop();
+        MrsClaus.closeSantasShop();
     };
 
     // responses
