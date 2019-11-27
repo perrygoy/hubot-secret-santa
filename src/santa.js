@@ -224,8 +224,8 @@ module.exports = function(robot) {
                 msg.send(`:santa: Ho ho ho! Time to clear out for the Easter Bunny. Closing up shop!`);
             }
         }
-        msg.send(getClosingMessage(secretSanta));
         MrsClaus.closeSantasShop();
+        msg.send(getClosingMessage(secretSanta));
     };
 
     // responses
