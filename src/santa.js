@@ -198,9 +198,10 @@ module.exports = function(robot) {
             msg.send(":santa: Ho ho ho! I haven't done the pairings yet! You can start pairing by saying `!santa pair`.");
             return;
         }
-        const pair = MrsClaus.getPairedUser(sender, type);
-        const message = `:santa: Ho ho ho! I have a message for you from your ${pair.type}! They said:\n>${text}`;
-        messageUser(pair.id, message);
+        const pair = MrsClaus.getPairedUser(msg.message.user.id, type);
+        const reverseType = type == 'recipient' ? 'santa' : 'recipient';
+        const message = `:santa: Ho ho ho! I have a message for you from your ${reverseType}! They said:\n>${text}`;
+        messageUser(pair.user.id, message);
         msg.send(`:santa: Ho ho ho! Consider it delivered! I'll let you know if they reply!`);
     };
 
