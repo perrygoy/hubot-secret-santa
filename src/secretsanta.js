@@ -19,7 +19,7 @@ function shuffle(a) {
 module.exports = function(robot) {
     // private functions
 
-    var getSanta = () => {
+    var getSecretSanta = () => {
         return robot.brain.data.secretsanta || {};
     };
 
@@ -30,90 +30,117 @@ module.exports = function(robot) {
 
     // public functions
 
-    this.getSanta = () => {
-        const santa = getSanta();
-        return Object.assign({}, santa);
+    this.getSecretSanta = () => {
+        const secretSanta = getSecretSanta();
+        return Object.assign({}, secretSanta);
     };
 
     this.isSantasWorkshopOpen = () => {
-        return getSanta().userList !== 'undefined';
+        return typeof getSecretSanta().santaList !== 'undefined';
     };
 
     this.isPairingDone = () => {
-        return getSanta().pairings !== 'undefined';
+        return typeof getSecretSanta().pairings !== 'undefined';
     };
 
     this.startSanta = (user, limit) => {
         if (this.isSantasWorkshopOpen()) {
             return false;
         }
-        const santa = {
+        const secretSanta = {
             started: Date.now(),
             initiator: {
                 id: user.id,
                 name: user.name,
             },
             limit: limit,
-            userList: [],
+            santaList: [],
         }
-        save(santa);
-        return santa;
+        save(secretSanta);
+        return secretSanta;
     };
 
     this.addSanta = (user, message) => {
         if (!this.isSantasWorkshopOpen()) {
             return false;
         }
-        let santa = this.getSanta();
-        santa.userList.append({
+        let secretSanta = this.getSecretSanta();
+        secretSanta.santaList.push({
             user: {
                 id: user.id,
                 name: user.name,
             },
             message: message,
-            joined: Date.now();
+            joined: Date.now(),
         });
-        save(santa);
-        return santa.userList;
-    }
+        save(secretSanta);
+        return secretSanta.santaList;
+    };
+
+    this.setMessage = (userId, message) => {
+        if (!this.isSantasWorkshopOpen()) {
+            return false;
+        }
+        let secretSanta = this.getSecretSanta();
+        for (let santa of secretSanta.santaList) {
+            if (santa.user.id == userId) {
+                santa.message = message;
+            }
+        }
+        save(secretSanta);
+        return true;
+    };
 
     this.pair = () => {
-        let santa = this.getSanta();
-        let users = [...santa.userList];
+        let secretSanta = this.getSecretSanta();
+        let users = [...secretSanta.santaList];
         shuffle(users);
-        santa.pairings = {};
+        secretSanta.pairings = {};
         for (let i=0; i<users.length; i++) {
-            santa.pairings[users[i]] = {
+            secretSanta.pairings[users[i]] = {
                 recipient: users[(i+1) % users.length],
                 santa: users[i == 0 ? users.length-1 : i-1]
             }
         }
-        save(santa);
-        return santa.pairings
+        save(secretSanta);
+        return secretSanta.pairings
     };
 
     this.reopen = userId => {
-        let santa = this.getSanta();
-        if (userId != santa.initiator.id) {
+        let secretSanta = this.getSecretSanta();
+        if (userId != secretSanta.initiator.id) {
             return false;
         }
-        delete santa.pairings;
-        save(santa);
-        return santa;
-    }
+        delete secretSanta.pairings;
+        save(secretSanta);
+        return secretSanta;
+    };
 
     this.getPairedUser = (userId, type) => {
         if (!this.isPairingDone()) {
             return false;
         }
-        if (!['recipient', 'santa'].contains(type)]) {
+        if (!['recipient', 'santa'].contains(type)) {
             return false;
         }
-        let santa = this.getSanta();
-        return santa.pairings[userId][type];
+        const secretSanta = this.getSecretSanta();
+        const pairedId = secretSanta.pairings[userId][type].user.id;
+        return secretSanta.santaList.filter(santa => santa.user.id == pairedId)[0];
+    };
+
+    this.addVoteToEnd = userId => {
+        if (!this.isSantasWorkshopOpen()) {
+            return false;
+        }
+        let secretSanta = this.getSecretSanta();
+        if (typeof secretSanta.votesToEnd === 'undefined') {
+            secretSanta.votesToEnd = [];
+        }
+        secretSanta.votesToEnd.push(userId);
+        save(secretSanta);
     };
 
     this.closeSantasShop = () => {
         save({});
-    }
+    };
 };
