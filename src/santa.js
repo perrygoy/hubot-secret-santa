@@ -45,13 +45,13 @@ module.exports = function(robot) {
 
     getClosingMessage = secretSanta => {
         let message = ":santa: Ho ho ho! I hope everyone had a wonderful holiday, full of cheer and good will! Here are some stats about this secret Santa:\n\n";
-        message += `*Date Started:* ${new Date(secretSanta.started).toLocaleDateString()}\n`;
-        message += `*Initiator*: <@${secretSanta.initiator.id}>\n`;
-        message += `*Santas*: `;
+        message += `    *Date Started:* ${new Date(secretSanta.started).toLocaleDateString()}\n`;
+        message += `    *Initiator*: <@${secretSanta.initiator.id}>\n`;
+        message += `    *Santas*: `;
         if (MrsClaus.isPairingDone()) {
             message += '\n';
             secretSanta.santaList.forEach(santa => {
-                message += `    <@${santa.user.id}> :gift:=> <@${secretSanta.pairings[santa.user.id].recipient.user.id}>\n`
+                message += `        <@${santa.user.id}> :gift:=> <@${secretSanta.pairings[santa.user.id].recipient.user.id}>\n`
             });
         } else {
             message += secretSanta.santaList.forEach(santa => `<@${santa.user.id}>`).join(", ");
@@ -134,16 +134,10 @@ module.exports = function(robot) {
             return;
         }
         MrsClaus.addSanta(msg.message.user, message);
-        let response = ":santa: Ho ho ho! You've been added to my list!";
-        if (typeof secretSanta.limit === 'undefined') {
-            response += " There was no monetary limit set for this secret Santa! :moneybag::present::moneybag:";
-        } else {
-            response += ` The limit for this secret Santa is ${secretSanta.limit}!`;
-        }
+        msg.send(":santa: Ho ho ho! You've been added to my list!");
         if (typeof message === 'undefined') {
             messageUser(msg.message.user.id, ":santa: Ho ho ho! You did not include a message to your Santa when you joined!\n\nIf you think of a message to include for your Santa later, you can tell me to write it down using `!santa setmessage [message]`, where `[message]` is the text you want to include!");
         }
-        msg.send(response);
         messageInitiator(`:santa: Ho ho ho! <@${msg.message.user.id}> has joined your secret Santa! :christmas_tree:`);
     };
 
