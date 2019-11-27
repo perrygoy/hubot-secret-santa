@@ -16,10 +16,10 @@ hubot-secret-santa
 * !santa pair - pairs your secret Santa round (and closes joining)!
 * !santa reopen - reopens the secret Santa round for more Santas to join! Only the initiator can do this.
 * !santa - tells you some information about the current secret Santa. Gives different information in a direct message!
-* !santa msg (recipient|santa) [msg] - (direct message only) sends the message to your recipient or santa through the bot!
+* !santa msg (recipient|santa) [msg] - (direct message only) sends the message to your recipient or Santa through the bot!
 * !santa end - ends the current secret Santa! The initiator can do this at any time, or some number of non-initiators can do it.
 
-Uses hubot-brain to keep track of the secret santa round.
+Uses hubot-brain to keep track of the secret Santa event.
 
 ## Configuration
 
