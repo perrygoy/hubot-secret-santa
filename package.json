@@ -1,0 +1,27 @@
+{
+  "name": "hubot-secret-santa",
+  "version": "0.0.1",
+  "description": "Ho ho ho! Run a secret Santa!",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hubot",
+    "hubot-scripts",
+    "secret",
+    "santa",
+    "secret-santa"
+  ],
+  "author": {
+    "name": "Perry Goy",
+    "email": "perry.goy@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/perrygoy/hubot-secret-santa.git"
+  },
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {}
+}
