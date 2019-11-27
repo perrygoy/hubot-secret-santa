@@ -138,7 +138,9 @@ module.exports = function(robot) {
         if (typeof message === 'undefined') {
             messageUser(msg.message.user.id, ":santa: Ho ho ho! You did not include a message to your Santa when you joined!\n\nIf you think of a message to include for your Santa later, you can tell me to write it down using `!santa setmessage [message]`, where `[message]` is the text you want to include!");
         }
-        messageInitiator(`:santa: Ho ho ho! <@${msg.message.user.id}> has joined your secret Santa! :christmas_tree:`);
+        if (msg.message.user.id != secretSanta.initiator.id) {
+            messageInitiator(`:santa: Ho ho ho! <@${msg.message.user.id}> has joined your secret Santa! :christmas_tree:`);
+        }
     };
 
     this.handleSetMessage = (msg, message) => {
@@ -147,7 +149,7 @@ module.exports = function(robot) {
             return;
         }
         const secretSanta = MrsClaus.getSecretSanta();
-        if (!secretSanta.santaList.forEach(santa => santa.user.id).contains(msg.message.user.id)) {
+        if (!secretSanta.santaList.map(santa => santa.user.id).includes(msg.message.user.id)) {
             msg.send(":santa: Ho ho ho! You haven't joined this secret Santa event yet! If you'd like to join, say `!santa join [message]`, where `[message]` is a message to your Santa!");
             return;
         }
@@ -213,7 +215,7 @@ module.exports = function(robot) {
                 msg.send(`:santa: Ho ho ho! While only ${secretSanta.initiator.name} can end the festivities outright, if ${SANTAS_TO_END} people all want to end this secret Santa, we'll be finished! Your vote has been counted, we just need ${SANTAS_TO_END - 1} more.`);
                 MrsClaus.addVoteToEnd(msg.message.user.id);
                 return;
-            } else if (secretSanta.votesToEnd.contains(msg.message.user.id)) {
+            } else if (secretSanta.votesToEnd.includes(msg.message.user.id)) {
                 msg.send(`:santa: Ho ho ho! I've checked my list, and you've already voted! You don't want to be added to the naughty list, do you?`);
                 return;
             } else if (SANTAS_TO_END - secretSanta.votesToEnd.length - 1 > 0) {

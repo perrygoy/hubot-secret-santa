@@ -120,7 +120,7 @@ module.exports = function(robot) {
         if (!this.isPairingDone()) {
             return false;
         }
-        if (!['recipient', 'santa'].contains(type)) {
+        if (!['recipient', 'santa'].includes(type)) {
             return false;
         }
         const secretSanta = this.getSecretSanta();
