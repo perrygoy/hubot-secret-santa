@@ -82,7 +82,7 @@ module.exports = function(robot) {
         return secretSanta.santaList;
     };
 
-    this.santaIsJoined = userId => {
+    this.isSantaJoined = userId => {
         if (!this.isSantasWorkshopOpen()) {
             return false;
         }
