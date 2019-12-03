@@ -65,14 +65,19 @@ module.exports = function(robot) {
             return false;
         }
         let secretSanta = this.getSecretSanta();
-        secretSanta.santaList.push({
-            user: {
-                id: user.id,
-                name: user.name,
-            },
-            message: message,
-            joined: Date.now(),
-        });
+        let santaIndex = secretSanta.findIndex(santa => santa.user.id == user.id)
+        if (santaIndex > -1) {
+            secretSanta.santaList[santaIndex].message = message;
+        } else {
+            secretSanta.santaList.push({
+                user: {
+                    id: user.id,
+                    name: user.name,
+                },
+                message: message,
+                joined: Date.now(),
+            });
+        }
         save(secretSanta);
         return secretSanta.santaList;
     };

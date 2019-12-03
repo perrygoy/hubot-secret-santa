@@ -162,6 +162,10 @@ module.exports = function(robot) {
     };
 
     this.handlePairing = msg => {
+        if (!MrsClaus.isSantasWorkshopOpen()) {
+            msg.send(":santa: Ho ho ho! My workshop isn't open yet, we're not ready to do pairings! You can start a new secret Santa by saying `!santa start`!");
+            return;
+        }
         if (MrsClaus.isPairingDone()) {
             msg.send(":santa: Ho ho ho! I've already checked my list twice! If you need a reminder of who will be receiving your gift, send me `!santa` in a private message!");
             return;
@@ -177,6 +181,10 @@ module.exports = function(robot) {
     }
 
     this.handleReopening = msg => {
+        if (!MrsClaus.isSantasWorkshopOpen()) {
+            msg.send(":santa: Ho ho ho! Can't reopen a workshop that hasn't yet been opened! You can start a new secret Santa by saying `!santa start`!");
+            return;
+        }
         if (!MrsClaus.isPairingDone()) {
             msg.send(":santa: Ho ho ho! Santa's workshop hasn't closed yet! There is still time to join by saying `!santa join [message]`!");
             return;
@@ -194,6 +202,10 @@ module.exports = function(robot) {
     };
 
     this.handleMsgUser = (msg, type, text) => {
+        if (!MrsClaus.isSantasWorkshopOpen()) {
+            msg.send(":santa: Ho ho ho! Not only have pairings not been done, my workshop isn't even open! You can start a new secret Santa by saying `!santa start`!");
+            return;
+        }
         if (!MrsClaus.isPairingDone()) {
             msg.send(":santa: Ho ho ho! I haven't done the pairings yet! You can start pairing by saying `!santa pair`.");
             return;
