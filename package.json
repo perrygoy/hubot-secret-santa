@@ -1,6 +1,6 @@
 {
   "name": "hubot-secret-santa",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Ho ho ho! Run a secret Santa!",
   "main": "index.coffee",
   "scripts": {

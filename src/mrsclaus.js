@@ -87,7 +87,7 @@ module.exports = function(robot) {
             return false;
         }
         let secretSanta = this.getSecretSanta();
-        return secretSanta.santaList.findIndex(santa => santa.user.id == user.id) > -1;
+        return secretSanta.santaList.findIndex(santa => santa.user.id == userId) > -1;
     };
 
     this.setMessage = (userId, message) => {
