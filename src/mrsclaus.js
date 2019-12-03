@@ -65,7 +65,7 @@ module.exports = function(robot) {
             return false;
         }
         let secretSanta = this.getSecretSanta();
-        let santaIndex = secretSanta.findIndex(santa => santa.user.id == user.id)
+        let santaIndex = secretSanta.santaList.findIndex(santa => santa.user.id == user.id)
         if (santaIndex > -1) {
             secretSanta.santaList[santaIndex].message = message;
         } else {
@@ -80,6 +80,14 @@ module.exports = function(robot) {
         }
         save(secretSanta);
         return secretSanta.santaList;
+    };
+
+    this.santaIsJoined = userId => {
+        if (!this.isSantasWorkshopOpen()) {
+            return false;
+        }
+        let secretSanta = this.getSecretSanta();
+        return secretSanta.santaList.findIndex(santa => santa.user.id == user.id) > -1;
     };
 
     this.setMessage = (userId, message) => {

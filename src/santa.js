@@ -133,7 +133,12 @@ module.exports = function(robot) {
             messageInitiator(`:santa: Ho ho ho! It seems little <@${msg.message.user.id}> missed the cutoff and wants to join this secret Santa. If you'd like them to join, you can re-open pairings by saying \`!santa reopen\`!\n\n*This would mean all current pairings would be broken*, and you would need to say \`!santa pair\` again to re-pair all your Santas!`);
             return;
         }
+        const onlyUpdatedMessage = MrsClaus.isSantaJoined(msg.message.user.id);
         MrsClaus.addSanta(msg.message.user, message);
+        if (onlyUpdatedMessage) {
+            msg.send(":santa: Ho ho ho! You've already joined, but I've updated your message for you. If you want to update your message in the future, it's easier to say `!santa setmessage [message]`, where `[message]` is what you want to say!");
+            return;
+        }
         msg.send(":santa: Ho ho ho! You've been added to my list!");
         if (typeof message === 'undefined') {
             messageUser(msg.message.user.id, ":santa: Ho ho ho! You did not include a message to your Santa when you joined!\n\nIf you think of a message to include for your Santa later, you can tell me to write it down using `!santa setmessage [message]`, where `[message]` is the text you want to include!");
