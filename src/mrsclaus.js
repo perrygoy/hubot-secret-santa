@@ -60,6 +60,16 @@ module.exports = function(robot) {
         return secretSanta;
     };
 
+    this.setLimit = (userId, limit) => {
+        let secretSanta = this.getSecretSanta();
+        if (secretSanta.initiator.id != userId) {
+            return false;
+        }
+        secretSanta.limit = limit;
+        save(secretSanta);
+        return secretSanta;
+    }
+
     this.addSanta = (user, message) => {
         if (!this.isSantasWorkshopOpen()) {
             return false;

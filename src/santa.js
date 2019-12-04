@@ -122,6 +122,24 @@ module.exports = function(robot) {
         msg.send(":santa: Ho ho ho! Santa's workshop is open to spread holiday cheer! You can join this secret Santa sortie by saying `!santa join [message]`, where `[message]` is a message to your Santa about what you might like to recieve!");
     };
 
+    this.handleSetLimit = (msg, limit) => {
+        if (!MrsClaus.isSantasWorkshopOpen()) {
+            msg.send(":santa: Ho ho ho! I can't set a limit if my workshop isn't open! You can set the limit when you start a secret Santa by saying `!santa start [limit]`!");
+            return;
+        }
+        const secretSanta = MrsClaus.getSecretSanta();
+        if (msg.message.user.id != secretSanta.initiator.id) {
+            msg.send(`:santa: Ho ho ho! You're not ${secretSanta.initiator.name}! Only they can change the limit for this event. You wouldn't want to be put on the naughty list, would you?`);
+            messageInitiator(`:santa: Ho ho ho! <@${msg.message.user.id}> just tried to change your event's limit to ${limit}! I think you should have a stern talk with them over some warm milk and cookies. :glass_of_milk::cookie:`);
+            return;
+        }
+        MrsClaus.setLimit(msg.message.user.id, limit);
+        secretSanta.santaList.forEach(santa => {
+            messageUser(santa.user.id, `:santa: Ho ho ho! The initiator of the secret Santa has updated the monetary limit! The new limit is ${limit}. Ask <@${secretSanta.initiator.id}> if you need any help!`);
+        });
+        msg.send(":santa: Ho ho ho! I've updated the limit and let all the Santas who have already joined know!");
+    }
+
     this.handleJoin = (msg, message) => {
         if (!MrsClaus.isSantasWorkshopOpen()) {
             msg.send(":santa: Ho ho ho! My workshop isn't currently open! You can start a new secret Santa by saying `!santa start`!");
@@ -260,6 +278,10 @@ module.exports = function(robot) {
 
     robot.hear(/!santa start(?: ([¢$£¥₽€₿]?[0-9]+))?/i, msg => {
         this.handleStartSanta(msg, msg.match[1]);
+    });
+
+    robot.hear(/!santa setlimit ([¢$£¥₽€₿]?[0-9]+)/i, msg => {
+        this.handleSetLimit(msg, msg.match[1]);
     });
 
     robot.hear(/!santa join(?: (.*))?/i, msg => {
