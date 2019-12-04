@@ -7,7 +7,7 @@
 //   !santa start - starts a secret Santa round!
 //   !santa join [message] - joins the secret Santa event, with the provided message!
 //   !santa setmessage [message] - sets your message for the secret Santa event!
-//   !santa pair - pairs your secret Santa round (and closes joining)!
+//   !santa match - matches your secret Santa round (and closes joining)!
 //   !santa reopen - reopens the secret Santa round for more Santas to join! Only the initiator can do this.
 //   !santa - tells you some information about the current secret Santa. Gives different information in a direct message!
 //   !santa msg (recipient|santa) [msg] - (direct message only) sends the message to your recipient or santa through the bot!
@@ -55,7 +55,7 @@ module.exports = function(robot) {
             });
         } else {
             message += secretSanta.santaList.map(santa => `<@${santa.user.id}>`).join(", ");
-            message += '\n    ... but pairing did not happen.\n';
+            message += '\n    ... but matching did not happen.\n';
         }
         message += "\nUntil next year! Happy holidaaays!";
         return message;
@@ -102,16 +102,16 @@ module.exports = function(robot) {
         message += `    *Gift Limit*: ${typeof secretSanta.limit === 'undefined' ? 'None!' : secretSanta.limit}\n`;
         message += `    *Santas*: ${secretSanta.santaList.map(santa => santa.user.name).join(', ')}.\n\n`;
         if (!MrsClaus.isPairingDone()) {
-            message += "If you're ready to begin pairing, you can say `!santa pair`! Otherwise, new Santas can join by saying `!santa join [message]`, where `[message]` is a message to their Santa!";
+            message += "If you're ready to begin matching, you can say `!santa match`! Otherwise, new Santas can join by saying `!santa join [message]`, where `[message]` is a message to their Santa!";
         } else {
-            message += "You all have been paired with your gift recipients! If you can't remember who will be receiving your holiday cheer and good will, send `!santa` to me in a private message!";
+            message += "You all have been matched with your gift recipients! If you can't remember who will be receiving your holiday cheer and good will, send `!santa` to me in a private message!";
         }
         msg.send(message);
     };
 
     this.handleStartSanta = (msg, limit) => {
         if (MrsClaus.isSantasWorkshopOpen()) {
-            msg.send(':santa: Ho ho ho! My workshop is already open! You can start pairing by saying `!santa pair`.');
+            msg.send(':santa: Ho ho ho! My workshop is already open! You can start matching by saying `!santa match`.');
             return;
         }
         if (MrsClaus.isPairingDone()) {
@@ -147,8 +147,8 @@ module.exports = function(robot) {
         }
         const secretSanta = MrsClaus.getSecretSanta();
         if (MrsClaus.isPairingDone()) {
-            msg.send(`:santa: Ho ho ho! I'm sorry little one, you missed out on this secret Santa; pairings have already gone out! You could try to get <@${secretSanta.initiator.id}> to re-open pairings if they say \`!santa reopen\`!`);
-            messageInitiator(`:santa: Ho ho ho! It seems little <@${msg.message.user.id}> missed the cutoff and wants to join this secret Santa. If you'd like them to join, you can re-open pairings by saying \`!santa reopen\`!\n\n*This would mean all current pairings would be broken*, and you would need to say \`!santa pair\` again to re-pair all your Santas!`);
+            msg.send(`:santa: Ho ho ho! I'm sorry little one, you missed out on this secret Santa; matches have already gone out! You could try to get <@${secretSanta.initiator.id}> to re-open matches if they say \`!santa reopen\`!`);
+            messageInitiator(`:santa: Ho ho ho! It seems little <@${msg.message.user.id}> missed the cutoff and wants to join this secret Santa. If you'd like them to join, you can re-open matches by saying \`!santa reopen\`!\n\n*This would mean all current matches would be broken*, and you would need to say \`!santa match\` again to re-match all your Santas!`);
             return;
         }
         const onlyUpdatedMessage = MrsClaus.isSantaJoined(msg.message.user.id);
@@ -179,14 +179,14 @@ module.exports = function(robot) {
         MrsClaus.setMessage(msg.message.user.id, message);
         msg.send(":santa: Ho ho ho! I've updated my list!");
         if (MrsClaus.isPairingDone()) {
-            const pair = MrsClaus.getPairedUser(msg.message.user.id, 'santa');
-            messageUser(pair.id, `:santa: Ho ho ho! Your recipient just updated their message! This is what they had to say:\n>${message}`);
+            const match = MrsClaus.getPairedUser(msg.message.user.id, 'santa');
+            messageUser(match.id, `:santa: Ho ho ho! Your recipient just updated their message! This is what they had to say:\n>${message}`);
         }
     };
 
-    this.handlePairing = msg => {
+    this.handleMatching = msg => {
         if (!MrsClaus.isSantasWorkshopOpen()) {
-            msg.send(":santa: Ho ho ho! My workshop isn't open yet, we're not ready to do pairings! You can start a new secret Santa by saying `!santa start`!");
+            msg.send(":santa: Ho ho ho! My workshop isn't open yet, we're not ready to do matches! You can start a new secret Santa by saying `!santa start`!");
             return;
         }
         if (MrsClaus.isPairingDone()) {
@@ -196,9 +196,9 @@ module.exports = function(robot) {
         MrsClaus.pair();
         const secretSanta = MrsClaus.getSecretSanta();
         secretSanta.santaList.forEach(santa => {
-            const pair = secretSanta.pairings[santa.user.id];
-            const message = `>>> ${pair.recipient.message}` || "... They did not leave you a message... you can reach out to them by saying `!santa msg recipient [message]`, where `[message]` is what you want me to tell them!";
-            messageUser(santa.user.id, `:santa: Ho ho ho! Your lucky recipient is <@${pair.recipient.user.id}>! Their message was:\n\n${message}`);
+            const match = secretSanta.pairings[santa.user.id];
+            const message = `>>> ${match.recipient.message}` || "... They did not leave you a message... you can reach out to them by saying `!santa msg recipient [message]`, where `[message]` is what you want me to tell them!";
+            messageUser(santa.user.id, `:santa: Ho ho ho! Your lucky recipient is <@${match.recipient.user.id}>! Their message was:\n\n${message}`);
         });
         msg.send(":santa: Ho ho ho! I've checked my list twice and told all my little helpers who will be receiving their gifts of holiday cheer. If you need any reminders of your recipient or their message, send me `!santa` in a private message!");
     }
@@ -226,17 +226,17 @@ module.exports = function(robot) {
 
     this.handleMsgUser = (msg, type, text) => {
         if (!MrsClaus.isSantasWorkshopOpen()) {
-            msg.send(":santa: Ho ho ho! Not only have pairings not been done, my workshop isn't even open! You can start a new secret Santa by saying `!santa start`!");
+            msg.send(":santa: Ho ho ho! Not only have matches not been done, my workshop isn't even open! You can start a new secret Santa by saying `!santa start`!");
             return;
         }
         if (!MrsClaus.isPairingDone()) {
-            msg.send(":santa: Ho ho ho! I haven't done the pairings yet! You can start pairing by saying `!santa pair`.");
+            msg.send(":santa: Ho ho ho! I haven't done the matches yet! You can start matching by saying `!santa match`.");
             return;
         }
-        const pair = MrsClaus.getPairedUser(msg.message.user.id, type);
+        const match = MrsClaus.getPairedUser(msg.message.user.id, type);
         const reverseType = type == 'recipient' ? 'santa' : 'recipient';
         const message = `:santa: Ho ho ho! I have a message for you from your ${reverseType}! They said:\n>${text}\n\nIf you'd like to reply, say \`!santa msg ${reverseType} [message]\`, where \`[message]\` is what you'd like to say back!`;
-        messageUser(pair.user.id, message);
+        messageUser(match.user.id, message);
         msg.send(`:santa: Ho ho ho! Consider it delivered! I'll let you know if they reply!`);
     };
 
@@ -292,8 +292,8 @@ module.exports = function(robot) {
         this.handleSetMessage(msg, msg.match[1]);
     });
 
-    robot.hear(/!santa pair$/i, msg => {
-        this.handlePairing(msg);
+    robot.hear(/!santa (pair|match|hunt)$/i, msg => {
+        this.handleMatching(msg);
     });
 
     robot.hear(/!santa reopen$/i, msg => {
