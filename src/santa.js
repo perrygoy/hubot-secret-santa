@@ -193,6 +193,12 @@ module.exports = function(robot) {
             msg.send(":santa: Ho ho ho! I've already checked my list twice! If you need a reminder of who will be receiving your gift, send me `!santa` in a private message!");
             return;
         }
+        const initiator = MrsClaus.getInitiator()
+        if (msg.message.user.id != initiator.id) {
+            msg.send(`:santa: Ho ho ho! You're not ${initiator.name}! Only they can initiate matching. Remember, patience is a virtue! Ho ho ho!`);
+            messageInitiator(`:santa: Ho ho ho! <@${msg.message.user.id}> just tried to initiate matching! You may want to have a little talk with them about the virtues of patience. :wink:`);
+            return;
+        }
         MrsClaus.pair();
         const secretSanta = MrsClaus.getSecretSanta();
         secretSanta.santaList.forEach(santa => {
@@ -214,14 +220,15 @@ module.exports = function(robot) {
         }
         const secretSanta = MrsClaus.getSecretSanta();
         if (msg.message.user.id != secretSanta.initiator.id) {
-            msg.send(`:santa: Ho ho ho! You're not ${secretSanta.initiator.name}! Only they can reopen my workshop. You wouldn't want to be put on the naughty list, would you?`);
-            messageInitiator(`:santa: Ho ho ho! <@${msg.message.user.id}> just tried to break in to my workshop! I think you should have a stern talk with them over some warm milk and cookies. :glass_of_milk::cookie:`);
+            msg.send(`:santa: Ho ho ho! You're not ${secretSanta.initiator.name}! Only they can reopen my workshop. If you reach out to them, they might be willing to extend a little Christmas cheer, just for you!`);
+            messageInitiator(`:santa: Ho ho ho! <@${msg.message.user.id}> just tried to break in to my workshop! They must be bursting with Christmas cheer! If you want to let them in, you can break the current matches with \`!santa reopen\` and let them join. You'll have to do \`!santa match\` again later, though!`);
             return;
         }
         secretSanta.santaList.forEach(santa => {
             messageUser(santa.user.id, `:santa: Ho ho ho! The initiator of the secret Santa has reopened the list! That means your recipient will be changing soon. Ask <@${secretSanta.initiator.id}> if you need any help!`);
         });
         MrsClaus.reopen(msg.message.user.id);
+        msg.send(":santa: Ho ho ho! My workshop is opened once again! I've messaged all the Santas to let them know. When you're ready to match again, just say `!santa match`!")
     };
 
     this.handleMsgUser = (msg, type, text) => {

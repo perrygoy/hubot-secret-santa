@@ -43,6 +43,14 @@ module.exports = function(robot) {
         return typeof getSecretSanta().pairings !== 'undefined';
     };
 
+    this.getInitiator = () => {
+        if (!this.isSantasWorkshopOpen()) {
+            return null;
+        }
+        const secretSanta = getSecretSanta();
+        return Object.assign({}, secretSanta.initiator)
+    }
+
     this.startSanta = (user, limit) => {
         if (this.isSantasWorkshopOpen()) {
             return false;
